@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0D1B2A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JTP 포트폴리오">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>JTP 포트폴리오</title>
+<style>
+  :root {
+    --bg:      #0D1B2A;
+    --card:    #1A2A3A;
+    --card2:   #162030;
+    --border:  #2A3F55;
+    --gold:    #F4C430;
+    --gold2:   #FFE8A3;
+    --blue:    #4A9EFF;
+    --green:   #4CAF50;
+    --red:     #FF5252;
+    --orange:  #FF9800;
+    --yellow:  #FFC107;
+    --purple:  #CE93D8;
+    --text:    #E8F0FE;
+    --muted:   #7A9BBF;
+    --radius:  14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+  }
+
+  /* ── 헤더 ── */
+  .header {
+    background: linear-gradient(135deg, #0D1B2A 0%, #1A2A3A 100%);
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-title { font-size: 17px; font-weight: 700; color: var(--gold); }
+  .header-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .refresh-btn {
+    background: var(--border); border: none; color: var(--text);
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+    transition: transform .3s;
+  }
+  .refresh-btn.spinning { animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── 섹션 ── */
+  .section { padding: 12px 12px 0; }
+  .section-title {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 8px; padding-left: 4px;
+  }
+
+  /* ── 총자산 카드 ── */
+  .asset-card {
+    background: linear-gradient(135deg, #1A2A3A, #162030);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 8px;
+  }
+  .asset-main {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .asset-value { font-size: 26px; font-weight: 700; color: var(--gold); }
+  .asset-value span { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .rate-badge {
+    padding: 5px 10px; border-radius: 20px; font-size: 15px; font-weight: 700;
+  }
+  .rate-neg { background: rgba(255,82,82,.15); color: var(--red); }
+  .rate-pos { background: rgba(76,175,80,.15);  color: var(--green); }
+  .asset-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .asset-item { background: rgba(255,255,255,.04); border-radius: 8px; padding: 8px 10px; }
+  .asset-item-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+  .asset-item-value { font-size: 13px; font-weight: 600; }
+
+  /* ── 트리거 카드들 ── */
+  .trigger-grid {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 8px;
+  }
+  .trigger-row {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .trigger-label {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    min-width: 48px; text-align: center;
+    background: rgba(255,255,255,.06);
+    border-radius: 6px; padding: 3px 6px;
+  }
+  .trigger-value { font-size: 12px; font-weight: 600; flex: 1; line-height: 1.4; }
+  .t-gold   { border-left: 3px solid var(--gold); }
+  .t-blue   { border-left: 3px solid var(--blue); }
+  .t-green  { border-left: 3px solid var(--green); }
+  .t-red    { border-left: 3px solid var(--red); }
+  .t-orange { border-left: 3px solid var(--orange); }
+  .t-purple { border-left: 3px solid var(--purple); }
+  .t-gray   { border-left: 3px solid var(--border); }
+
+  /* ── 시장 점검 ── */
+  .market-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px; margin-bottom: 8px;
+  }
+  .market-item {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px;
+  }
+  .market-name  { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .market-drop  { font-size: 18px; font-weight: 700; }
+  .market-sig   { font-size: 10px; margin-top: 3px; color: var(--muted); }
+  .drop-neg { color: var(--red); }
+  .drop-warn { color: var(--orange); }
+  .drop-ok  { color: var(--green); }
+
+  /* ── 계좌별 ── */
+  .account-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+  .account-row {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .acc-name  { font-size: 12px; font-weight: 600; min-width: 80px; }
+  .acc-value { font-size: 12px; color: var(--muted); }
+  .acc-rate  { font-size: 13px; font-weight: 700; min-width: 60px; text-align: right; }
+
+  /* ── 신호등 섹션 ── */
+  .signal-row {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .signal-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .sig-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .sig-yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .sig-red    { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .signal-text { font-size: 12px; flex: 1; }
+  .signal-label { font-size: 10px; color: var(--muted); min-width: 60px; }
+
+  /* ── 로딩 / 에러 ── */
+  .loading {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 60vh; gap: 14px; color: var(--muted);
+  }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  .error-card {
+    background: rgba(255,82,82,.1); border: 1px solid rgba(255,82,82,.3);
+    border-radius: var(--radius); padding: 16px; margin: 12px;
+    color: var(--red); font-size: 13px; line-height: 1.6;
+  }
+
+  /* ── 업데이트 바 ── */
+  .update-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+  }
+  .update-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); display: inline-block; margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: .3; }
+  }
+
+  /* ── 설정 모달 ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.7); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+    width: calc(100% - 32px); max-width: 400px;
+  }
+  .modal h3 { font-size: 15px; color: var(--gold); margin-bottom: 12px; }
+  .modal label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .modal input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; color: var(--text);
+    font-size: 13px; margin-bottom: 12px;
+  }
+  .modal input:focus { outline: none; border-color: var(--blue); }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn {
+    padding: 9px 18px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-cancel  { background: var(--border); color: var(--text); }
+
+  .config-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 18px; cursor: pointer; padding: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div>
+    <div class="header-title">📊 JTP 포트폴리오</div>
+    <div class="header-sub" id="updateTime">업데이트 중...</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="config-btn" onclick="showConfig()" title="API URL 설정">⚙️</button>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">🔄</button>
+  </div>
+</div>
+
+<!-- 메인 콘텐츠 -->
+<div id="mainContent">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div>포트폴리오 데이터 로딩 중...</div>
+  </div>
+</div>
+
+<!-- 업데이트 바 -->
+<div class="update-bar">
+  <span><span class="update-dot"></span><span id="statusText">연결 대기</span></span>
+  <span id="goalText">🎯 목표: 20억</span>
+</div>
+
+<!-- 설정 모달 -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <h3>⚙️ API 설정</h3>
+    <label>GAS 웹앱 URL</label>
+    <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/...">
+    <div style="font-size:11px;color:#7A9BBF;margin-bottom:12px;line-height:1.5">
+      구글 스크립트 편집기 → 배포 → 새 배포<br>
+      → 웹 앱 → "모든 사용자" 액세스 → URL 복사
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-cancel" onclick="hideConfig()">취소</button>
+      <button class="btn btn-primary" onclick="saveConfig()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 설정 ──
+var API_URL = localStorage.getItem('jtp_api_url') || '';
+var AUTO_REFRESH_MS = 5 * 60 * 1000; // 5분
+var refreshTimer;
+
+// ── 유틸 ──
+function fmt(n) {
+  if (!n && n !== 0) return '—';
+  return Math.round(n).toLocaleString('ko-KR');
+}
+function fmtRate(n) {
+  if (!n && n !== 0) return '—';
+  var v = (typeof n === 'number') ? n : parseFloat(n);
+  return (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+}
+function rateColor(n) {
+  var v = typeof n === 'number' ? n : parseFloat(n);
+  if (v > 0)  return 'drop-ok';
+  if (v > -5) return 'drop-warn';
+  return 'drop-neg';
+}
+function triggerClass(txt) {
+  txt = txt || '';
+  if (txt.includes('🔴') || txt.includes('✅')) return 't-red';
+  if (txt.includes('🟠')) return 't-orange';
+  if (txt.includes('🟡')) return 't-gold';
+  if (txt.includes('🟢')) return 't-green';
+  if (txt.includes('🔵')) return 't-blue';
+  if (txt.includes('🟣') || txt.includes('보라')) return 't-purple';
+  return 't-gray';
+}
+// G트리거 완료 여부
+function isGDone(txt) { return txt && txt.includes('✅'); }
+
+// ── 데이터 로드 ──
+function loadData() {
+  if (!API_URL) { showConfig(); return; }
+  var btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('statusText').textContent = '업데이트 중...';
+
+  fetch(API_URL + '?t=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      btn.classList.remove('spinning');
+      if (d.status === 'error') throw new Error(d.message);
+      render(d);
+      document.getElementById('statusText').textContent = '정상 연결';
+      document.getElementById('updateTime').textContent = d.updatedAt + ' 업데이트';
+      scheduleRefresh();
+    })
+    .catch(function(err) {
+      btn.classList.remove('spinning');
+      document.getElementById('statusText').textContent = '연결 오류';
+      document.getElementById('mainContent').innerHTML =
+        '<div class="error-card">❌ 데이터 로드 실패<br><br>' +
+        err.message + '<br><br>' +
+        '⚙️ 오른쪽 상단 설정에서 API URL을 확인해주세요.</div>';
+    });
+}
+
+function scheduleRefresh() {
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(loadData, AUTO_REFRESH_MS);
+}
+
+// ── 렌더링 ──
+function render(d) {
+  var html = '';
+
+  // 1. 총자산
+  var rateN = typeof d.returnRate === 'number' ? d.returnRate : parseFloat(d.returnRate);
+  var isPos = rateN >= 0;
+  html += '<div class="section"><div class="section-title">💰 자산 총괄</div>';
+  html += '<div class="asset-card">';
+  html += '<div class="asset-main">';
+  html +=   '<div><div class="asset-value">' + fmt(d.totalAsset) + '<span>원</span></div>';
+  html +=   '<div style="font-size:11px;color:var(--muted);margin-top:4px">원금 ' + fmt(d.totalInvest) + '원</div></div>';
+  html +=   '<div class="rate-badge ' + (isPos?'rate-pos':'rate-neg') + '">' + fmtRate(rateN) + '</div>';
+  html += '</div>';
+  html += '<div class="asset-grid">';
+  html += '<div class="asset-item"><div class="asset-item-label">CMA</div><div class="asset-item-value">' + fmt(d.cma) + '원</div></div>';
+  html += '<div class="asset-item"><div class="asset-item-label">여윳돈</div><div class="asset-item-value">' + fmt(d.surplus) + '원</div></div>';
+  html += '<div class="asset-item"><div class="asset-item-label">평가손익</div><div class="asset-item-value ' + (d.profitLoss>=0?'drop-ok':'drop-neg') + '">' + fmt(d.profitLoss) + '원</div></div>';
+  html += '<div class="asset-item"><div class="asset-item-label">월 투자금</div><div class="asset-item-value">' + fmt(d.monthlyInvest) + '원</div></div>';
+  html += '</div></div></div>';
+
+  // 2. 전략 신호
+  html += '<div class="section"><div class="section-title">🚦 전략 신호</div>';
+  var sigs = [
+    { label:'금은비', val: d.goldSilverSig },
+    { label:'시장',   val: d.marketSig },
+    { label:'계좌만기',val: d.accountSig },
+    { label:'이번달', val: d.thisMonthDone }
+  ];
+  sigs.forEach(function(s) {
+    var dotCls = (s.val||'').includes('정상') || (s.val||'').includes('완료') || (s.val||'').includes('균형') ? 'sig-green'
+               : (s.val||'').includes('경계') || (s.val||'').includes('주의') ? 'sig-yellow' : 'sig-red';
+    html += '<div class="signal-row">';
+    html += '<span class="signal-label">' + s.label + '</span>';
+    html += '<span class="signal-dot ' + dotCls + '"></span>';
+    html += '<span class="signal-text">' + (s.val||'—') + '</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // 3. 트리거 액션
+  html += '<div class="section"><div class="section-title">⚡ 트리거 현황</div>';
+  html += '<div class="trigger-grid">';
+  var triggers = [
+    { label:'🌡️ 김프',  val: d.kimpAction,  extra: (d.kimp||0).toFixed(2)+'%' },
+    { label:'🥇 G트리거', val: d.gTrigger,  extra: '' },
+    { label:'🔵 B트리거', val: d.bTrigger,  extra: '' },
+    { label:'🟣 S트리거', val: d.sTrigger,  extra: '' },
+    { label:'🥈 A트리거', val: d.aTrigger,  extra: '' },
+    { label:'💎 SNDK',   val: d.sndkStrat, extra: '' }
+  ];
+  triggers.forEach(function(t) {
+    var cls = triggerClass(t.val);
+    // G트리거 완료면 초록
+    if (t.label.includes('G') && isGDone(t.val)) cls = 't-green';
+    html += '<div class="trigger-row ' + cls + '">';
+    html += '<span class="trigger-label">' + t.label + '</span>';
+    html += '<span class="trigger-value">' + (t.val||'—');
+    if (t.extra) html += ' <span style="color:var(--muted);font-weight:400">(' + t.extra + ')</span>';
+    html += '</span></div>';
+  });
+  html += '</div></div>';
+
+  // 4. 시장 점검
+  html += '<div class="section"><div class="section-title">📉 시장 점검</div>';
+  html += '<div class="market-grid">';
+  var markets = [
+    { name:'국제금', drop: d.goldDrop, sig: d.goldSignal },
+    { name:'국제은', drop: d.silverDrop, sig: '' },
+    { name:'VOO',   drop: d.vooDrop, sig: d.vooSignal },
+    { name:'원달러', drop: null, sig: '', val: d.usdkrw }
+  ];
+  markets.forEach(function(m) {
+    html += '<div class="market-item">';
+    html += '<div class="market-name">' + m.name + '</div>';
+    if (m.drop !== null && m.drop !== undefined) {
+      var dv = typeof m.drop === 'number' ? m.drop : parseFloat(m.drop);
+      html += '<div class="market-drop ' + rateColor(dv) + '">' + fmtRate(dv) + '</div>';
+    } else {
+      html += '<div class="market-drop ' + rateColor(0) + '">' + fmt(m.val) + '</div>';
+    }
+    if (m.sig) html += '<div class="market-sig">' + m.sig + '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  // 5. 계좌별
+  html += '<div class="section"><div class="section-title">🏦 계좌별 수익률</div>';
+  html += '<div class="account-list">';
+  (d.accounts||[]).forEach(function(a) {
+    var rv = typeof a.rate === 'number' ? a.rate : parseFloat(a.rate||0);
+    html += '<div class="account-row">';
+    html += '<span class="acc-name">' + a.name + '</span>';
+    html += '<span class="acc-value">' + fmt(a.value) + '원</span>';
+    html += '<span class="acc-rate ' + rateColor(rv) + '">' + fmtRate(rv) + '</span>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  document.getElementById('mainContent').innerHTML = html;
+
+  // 목표까지 얼마나 왔나
+  var goalAmt = 2000000000;
+  var prog = Math.min(100, (d.totalAsset / goalAmt * 100)).toFixed(1);
+  document.getElementById('goalText').textContent = '🎯 목표 달성 ' + prog + '%';
+}
+
+// ── 설정 ──
+function showConfig() {
+  document.getElementById('apiUrlInput').value = API_URL;
+  document.getElementById('configModal').classList.add('show');
+}
+function hideConfig() {
+  document.getElementById('configModal').classList.remove('show');
+}
+function saveConfig() {
+  var url = document.getElementById('apiUrlInput').value.trim();
+  if (!url) { alert('URL을 입력해주세요'); return; }
+  API_URL = url;
+  localStorage.setItem('jtp_api_url', url);
+  hideConfig();
+  loadData();
+}
+
+// ── 초기화 ──
+if (API_URL) {
+  loadData();
+} else {
+  document.getElementById('mainContent').innerHTML =
+    '<div class="loading"><div style="font-size:40px">⚙️</div>' +
+    '<div style="color:var(--muted);text-align:center;line-height:1.8">' +
+    'GAS 웹앱 URL을 설정해주세요<br>' +
+    '<span style="font-size:12px">오른쪽 상단 ⚙️ 버튼</span></div>' +
+    '<button class="btn btn-primary" onclick="showConfig()">URL 설정하기</button></div>';
+}
+</script>
+</body>
+</html>
